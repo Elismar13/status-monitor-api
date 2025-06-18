@@ -3,19 +3,18 @@ package com.thushima.statusmonitor.user.infraestructure;
 import com.thushima.statusmonitor.user.domain.Email;
 import com.thushima.statusmonitor.user.domain.Password;
 import com.thushima.statusmonitor.user.domain.User;
-import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Table(name = "users")
-@Getter
+@Data
 @NoArgsConstructor
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
     private String password;

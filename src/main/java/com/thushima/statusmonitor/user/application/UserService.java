@@ -4,14 +4,12 @@ import com.thushima.statusmonitor.user.domain.Email;
 import com.thushima.statusmonitor.user.domain.Password;
 import com.thushima.statusmonitor.user.domain.User;
 import com.thushima.statusmonitor.user.domain.UserRepository;
-import com.thushima.statusmonitor.user.infraestructure.UserEntity;
 import com.thushima.statusmonitor.user.infraestructure.web.dto.RegisterUserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class UserService {
@@ -22,10 +20,10 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    public User register(RegisterUserRequest request) {
+    public Mono<User> register(RegisterUserRequest request) {
         Email email = new Email(request.email());
-        if (userRepo.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email já existe");
+        if (Boolean.TRUE.equals(userRepo.existsByEmail(email).block())) {
+            throw new IllegalArgumentException("Email already exists.");
         }
 
         User user = User.builder()
@@ -40,7 +38,4 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public List<User> search(Specification<UserEntity> spec) {
-        return userRepo.findAll(spec);
-    }
 }
