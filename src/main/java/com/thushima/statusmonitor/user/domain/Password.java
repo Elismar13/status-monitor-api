@@ -1,6 +1,5 @@
 package com.thushima.statusmonitor.user.domain;
 
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import java.util.regex.Pattern;
 
 public record Password(String value) {
@@ -28,7 +27,4 @@ public record Password(String value) {
         return BCRYPT_PATTERN.matcher(value).matches();
     }
 
-    public String hash() {
-        return isHashed(value) ? value : BCrypt.hashpw(value, BCrypt.gensalt());
-    }
 }

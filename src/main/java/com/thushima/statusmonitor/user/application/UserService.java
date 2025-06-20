@@ -4,6 +4,7 @@ import com.thushima.statusmonitor.user.domain.Email;
 import com.thushima.statusmonitor.user.domain.Password;
 import com.thushima.statusmonitor.user.domain.User;
 import com.thushima.statusmonitor.user.domain.UserRepository;
+import com.thushima.statusmonitor.user.infraestructure.UserEntity;
 import com.thushima.statusmonitor.user.infraestructure.web.dto.RegisterUserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,7 +29,7 @@ public class UserService {
             Email email = new Email(request.email());
             Password password = new Password(request.password());
 
-            return userRepo.existsByEmail(email)
+            return userRepo.existsByEmail(email.value())
                     .flatMap(emailExists -> {
                         if (emailExists) {
                             return Mono.error(new IllegalArgumentException("Email already exists"));
@@ -37,13 +38,14 @@ public class UserService {
                         String hashedPassword = passwordEncoder.encode(password.value());
                         User user = User.builder()
                                 .email(email)
-                                .password(hashedPassword)
+                                .password(new Password(hashedPassword, true))
                                 .name(request.name())
                                 .createdAt(LocalDateTime.now())
                                 .active(true)
                                 .build();
 
-                        return userRepo.save(user);
+                        return userRepo.save(UserEntity.fromDomain(user))
+                                .map(UserEntity::toDomain);
                     });
         });
     }
