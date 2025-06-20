@@ -37,7 +37,7 @@ public class UserEntity {
         return User.builder()
                 .id(new User.UserId(id))
                 .email(new Email(email))
-                .password(new Password(password, true))
+                .password(new Password(password))
                 .name(name)
                 .createdAt(createdAt)
                 .active(active)
