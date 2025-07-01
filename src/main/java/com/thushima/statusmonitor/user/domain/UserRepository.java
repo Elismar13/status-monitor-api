@@ -17,4 +17,5 @@ public interface UserRepository extends R2dbcRepository<UserEntity, Integer> {
 
     @Override
     Flux<UserEntity> findAll();
+
 }

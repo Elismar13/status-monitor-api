@@ -3,3 +3,10 @@ spring:
     name: statusmonitor
   profiles:
     active: dev
+
+jwt:
+  secret: your-256-bit-secret-change-this-in-production
+  access-token:
+    expiration: 900000 # 15 minutes in milliseconds
+  refresh-token:
+    expiration: 2592000000 # 30 days in milliseconds
