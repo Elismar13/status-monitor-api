@@ -1,4 +1,4 @@
-package com.thushima.statusmonitor.user.domain;
+package com.thushima.statusmonitor.user.infraestructure.repository;
 
 import com.thushima.statusmonitor.user.infraestructure.UserEntity;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
