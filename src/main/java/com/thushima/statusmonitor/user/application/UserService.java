@@ -49,4 +49,9 @@ public class UserService {
                     });
         });
     }
+
+    public Mono<User> findByEmail(String email) {
+        return userRepo.findByEmail(email)
+                .map(UserEntity::toDomain);
+    }
 }

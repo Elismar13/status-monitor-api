@@ -49,6 +49,10 @@ public class JwtUtil {
         return buildToken(user, refreshTokenExpiration);
     }
 
+    public Long getExpirationTime() {
+        return accessTokenExpiration;
+    }
+
     private String buildToken(User user, long expiration) {
         return Jwts.builder()
                 .setSubject(user.getEmail().value())
@@ -87,13 +91,14 @@ public class JwtUtil {
         });
     }
 
-    public Mono<String> extractUsername(String token) {
+    public Mono<String> extractEmail(String token) {
         return validateToken(token)
                 .map(Claims::getSubject)
                 .onErrorResume(e -> Mono.empty());
     }
 
-    public Mono<Boolean> isTokenExpired(String token) {
+
+    public Mono<Boolean> isTokenInvalidOrExpired(String token) {
         return validateToken(token)
                 .map(claims -> claims.getExpiration().before(new Date()))
                 .onErrorReturn(true);
