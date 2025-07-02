@@ -22,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public Mono<ResponseEntity<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
-        return authService.login(request.username(), request.password())
+        return authService.login(request.email(), request.password())
                 .map(response -> ResponseEntity.ok(response));
     }
 
