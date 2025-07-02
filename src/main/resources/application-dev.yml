@@ -9,6 +9,13 @@ spring:
     password: postgres
     enabled: true
 
+jwt:
+  secret: thushima
+  access-token:
+    expiration: 900000 # 15 minutes in milliseconds
+  refresh-token:
+    expiration: 2592000000 # 30 days in milliseconds
+
 logging:
   level:
     root: INFO
