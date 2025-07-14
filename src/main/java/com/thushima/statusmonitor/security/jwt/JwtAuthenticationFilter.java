@@ -24,6 +24,7 @@ public class JwtAuthenticationFilter implements WebFilter {
         this.jwtUtil = jwtUtil;
     }
 
+    @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         String token = resolveToken(exchange.getRequest().getHeaders());
 
@@ -41,8 +42,8 @@ public class JwtAuthenticationFilter implements WebFilter {
                 .doOnSuccess(auth -> log.debug("Successfully created authentication for principal: {}", auth.getPrincipal()))
                 .flatMap(authentication -> {
                     log.debug("Setting authentication in security context");
-                    ReactiveSecurityContextHolder.withAuthentication(authentication);
-                    return chain.filter(exchange);
+                    return chain.filter(exchange)
+                            .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
                 })
                 .onErrorResume(e -> {
                     log.debug("Failed to set authentication in security context: {}", e.getMessage());
