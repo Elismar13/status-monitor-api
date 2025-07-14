@@ -5,3 +5,10 @@ spring:
   logging:
     level:
       root: WARN
+
+jwt:
+  secret: 2a3814287a20f7f4fde6bcb2964c496df8e82be6e2482f4bd25fd51cf392330c
+  access-token:
+    expiration: 900000 # 15 minutes in milliseconds
+  refresh-token:
+    expiration: 2592000000 # 30 days in milliseconds

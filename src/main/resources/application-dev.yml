@@ -8,17 +8,18 @@ spring:
     user: thushima
     password: postgres
     enabled: true
+    baseline-on-migrate: true
 
 jwt:
-  secret: thushima
+  secret: 2a3814287a20f7f4fde6bcb2964c496df8e82be6e2482f4bd25fd51cf392330c
   access-token:
-    expiration: 900000 # 15 minutes in milliseconds
+    expiration: 86400000 # 24 hours in milliseconds
   refresh-token:
     expiration: 2592000000 # 30 days in milliseconds
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
     org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
