@@ -19,7 +19,8 @@ jwt:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
+    com.thushima: DEBUG
     org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -1,5 +1,6 @@
 package com.thushima.statusmonitor.user.application;
 
+import com.thushima.statusmonitor.shared.exception.ResourceAlreadyExistsException;
 import com.thushima.statusmonitor.user.domain.Email;
 import com.thushima.statusmonitor.user.domain.Password;
 import com.thushima.statusmonitor.user.domain.User;
@@ -32,7 +33,7 @@ public class UserService {
             return userRepo.existsByEmail(email.value())
                     .flatMap(emailExists -> {
                         if (emailExists) {
-                            return Mono.error(new IllegalArgumentException("Email already exists"));
+                            return Mono.error(new ResourceAlreadyExistsException("User", "email", email.value()));
                         }
 
                         String hashedPassword = passwordEncoder.encode(password.value());
