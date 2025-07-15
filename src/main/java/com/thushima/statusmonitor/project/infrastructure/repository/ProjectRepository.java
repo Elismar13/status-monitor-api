@@ -20,4 +20,6 @@ public interface ProjectRepository extends R2dbcRepository<Project, UUID> {
     Mono<Boolean> existsByIdAndUserId(UUID id, Long userId);
     
     Mono<Void> deleteByIdAndUserId(UUID id, Long userId);
+
+    Flux<Project> findByActiveTrue();
 }
