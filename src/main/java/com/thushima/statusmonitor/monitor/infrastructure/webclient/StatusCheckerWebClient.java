@@ -42,7 +42,6 @@ public class StatusCheckerWebClient {
                 .exchangeToMono(clientResponse -> {
                     long responseTime = System.currentTimeMillis() - startTime;
                     int statusCode = clientResponse.statusCode().value();
-                    boolean isSuccess = clientResponse.statusCode().is2xxSuccessful();
 
                     return clientResponse.releaseBody()
                             .then(Mono.just(MonitorResult.up(statusCode, responseTime)));

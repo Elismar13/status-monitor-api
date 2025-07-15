@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @RestController
@@ -21,7 +22,7 @@ public class MonitorController {
         this.monitorService = monitorService;
     }
 
-    @PostMapping("/check/{projectId}")
+    @PatchMapping("/check/{projectId}")
 //    @PreAuthorize("hasRole('USER')")
     public Mono<ResponseEntity<MonitorResult>> checkProjectStatus(
             @PathVariable UUID projectId,
@@ -30,6 +31,7 @@ public class MonitorController {
         return monitorService.getProjectStatus(projectId)
                 .map(project -> ResponseEntity.ok(MonitorResult.builder()
                         .status(project.lastStatus())
+                        .checkedAt(Instant.now())
                         .statusCode(200)
                         .build()
                 ))

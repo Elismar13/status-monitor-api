@@ -76,15 +76,12 @@ public class MonitorServiceImpl implements MonitorService {
                 .thenReturn(result);
     }
 
+    @Transactional
     public Mono<ProjectResponse> getProjectStatus(UUID projectId) {
         return projectRepository.findById(projectId)
                 .flatMap(project -> statusChecker.checkStatus(project.getUrl(), project.getTimeoutInSeconds())
-                        .flatMap(result -> {
-                            // Atualiza o status sem salvar no banco
-                            project.setLastStatus(result.isUp() ? "UP" : "DOWN");
-                            project.setLastCheckedAt(LocalDateTime.now());
-                            return Mono.just(ProjectResponse.fromDomain(project));
-                        })
+                        .flatMap(result -> updateProjectStatus(project, result)
+                                .thenReturn(ProjectResponse.fromDomain(project)))
                 );
     }
 }
