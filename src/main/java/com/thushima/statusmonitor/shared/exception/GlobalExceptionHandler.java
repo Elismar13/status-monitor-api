@@ -54,6 +54,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage()
         );
     }
+    
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public Mono<ResponseEntity<ErrorResponse>> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex) {
+        log.error("ResourceAlreadyExistsException: {}", ex.getMessage(), ex);
+        return buildErrorResponse(
+                ex.getStatus(),
+                ex.getErrorCode(),
+                ex.getMessage(),
+                ex.getDetails()
+        );
+    }
 
     @ExceptionHandler(Exception.class)
     public Mono<ResponseEntity<ErrorResponse>> handleAllUncaughtException(Exception ex) {
