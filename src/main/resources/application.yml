@@ -5,9 +5,9 @@ spring:
     active: dev
 
   monitoring:
-    check-interval: 30000  # 30 segundos
-    connection-timeout: 5000  # 5 segundos
-    read-timeout: 30000  # 30 segundos
+    check-interval: 30000
+    connection-timeout: 5000
+    read-timeout: 30000
     max-retries: 2
-    retry-delay: 1000  # 1 segundo
+    retry-delay: 1000
     user-agent: StatusMonitor/1.0

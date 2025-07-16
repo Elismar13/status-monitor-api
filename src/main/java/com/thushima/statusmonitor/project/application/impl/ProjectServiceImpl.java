@@ -3,6 +3,7 @@ package com.thushima.statusmonitor.project.application.impl;
 import com.thushima.statusmonitor.project.application.ProjectService;
 import com.thushima.statusmonitor.project.domain.Project;
 import com.thushima.statusmonitor.project.infrastructure.repository.ProjectRepository;
+import com.thushima.statusmonitor.project.presentation.dto.DashboardSummaryResponse;
 import com.thushima.statusmonitor.project.presentation.dto.ProjectRequest;
 import com.thushima.statusmonitor.project.presentation.dto.ProjectResponse;
 import com.thushima.statusmonitor.shared.exception.ResourceNotFoundException;
@@ -55,40 +56,58 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Mono<ProjectResponse> getById(UUID id, String userEmail) {
-        return userService.findByEmail(userEmail)
-                .flatMap(user -> projectRepository.findByIdAndUserId(id, user.getId().value())
-                        .switchIfEmpty(Mono.error(new ResourceNotFoundException("Project", "id", id.toString()))))
+        return validateUserAndProject(id, userEmail)
                 .map(ProjectResponse::fromDomain);
     }
 
     @Override
     public Flux<ProjectResponse> getAllByUserEmail(String userEmail) {
-        return userService.findByEmail(userEmail)
-                .flatMapMany(user -> projectRepository.findAllByUserId(user.getId().value()))
+        return validateUserAndRetrieveProjects(userEmail)
                 .map(ProjectResponse::fromDomain);
     }
 
     @Override
-    public Mono<ProjectResponse> update(UUID id, ProjectRequest request, String userEmail) {
-        return userService.findByEmail(userEmail)
-                .flatMap(user -> projectRepository.findByIdAndUserId(id, user.getId().value())
-                        .switchIfEmpty(Mono.error(new ResourceNotFoundException("Project", "id", id.toString())))
-                        .flatMap(existingProject -> {
-                            existingProject.setName(request.name());
-                            existingProject.setDescription(request.description());
-                            existingProject.setUrl(request.url());
-                            existingProject.setActive(request.active());
-                            existingProject.setCheckIntervalInMinutes(request.checkIntervalInMinutes());
-                            existingProject.setTimeoutInSeconds(request.timeoutInSeconds());
-                            existingProject.setSuccessThreshold(request.successThreshold());
-                            existingProject.setFailureThreshold(request.failureThreshold());
-                            existingProject.setUpdatedAt(LocalDateTime.now());
+    public Mono<DashboardSummaryResponse> getDashboardSummary(String userEmail) {
+        return validateUserAndRetrieveProjects(userEmail)
+                .collectList()
+                .map(projects -> {
+                    long totalProjects = projects.size();
+                    long upCount = projects.stream()
+                            .filter(Project::isActive)
+                            .filter(project -> "UP".equals(project.getLastStatus())).count();
+                    long downCount = projects.stream()
+                            .filter(Project::isActive)
+                            .filter(project -> "DOWN".equals(project.getLastStatus())).count();
 
-                            return projectRepository.save(existingProject);
-                        })
-                        .map(ProjectResponse::fromDomain)
-                        .doOnSuccess(p -> log.info("Updated project: {} for user: {}", id, userEmail))
-                        .doOnError(error -> log.error("Error updating project: {}", error.getMessage())));
+                    return DashboardSummaryResponse.builder()
+                            .totalProjects(totalProjects)
+                            .upCount(upCount)
+                            .downCount(downCount)
+                            .build();
+                })
+                .doOnSuccess(p -> log.info("Retrieved dashboard summary for user: {}", userEmail))
+                .doOnError(error -> log.error("Error retrieving dashboard summary: {}", error.getMessage()));
+    }
+
+    @Override
+    public Mono<ProjectResponse> update(UUID id, ProjectRequest request, String userEmail) {
+        return validateUserAndProject(id, userEmail)
+                .flatMap(existingProject -> {
+                    existingProject.setName(request.name());
+                    existingProject.setDescription(request.description());
+                    existingProject.setUrl(request.url());
+                    existingProject.setActive(request.active());
+                    existingProject.setCheckIntervalInMinutes(request.checkIntervalInMinutes());
+                    existingProject.setTimeoutInSeconds(request.timeoutInSeconds());
+                    existingProject.setSuccessThreshold(request.successThreshold());
+                    existingProject.setFailureThreshold(request.failureThreshold());
+                    existingProject.setUpdatedAt(LocalDateTime.now());
+
+                    return projectRepository.save(existingProject);
+                })
+                .map(ProjectResponse::fromDomain)
+                .doOnSuccess(p -> log.info("Updated project: {} for user: {}", id, userEmail))
+                .doOnError(error -> log.error("Error updating project: {}", error.getMessage()));
     }
 
     @Override
@@ -105,5 +124,17 @@ public class ProjectServiceImpl implements ProjectService {
     public Mono<Boolean> existsByIdAndUserEmail(UUID id, String userEmail) {
         return userService.findByEmail(userEmail)
                 .flatMap(user -> projectRepository.existsByIdAndUserId(id, user.getId().value()));
+    }
+
+    private Mono<Project> validateUserAndProject(UUID id, String userEmail) {
+        return userService.findByEmail(userEmail)
+                .flatMap(user -> projectRepository.findByIdAndUserId(id, user.getId().value()))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Project", "id", id.toString())));
+    }
+
+    private Flux<Project> validateUserAndRetrieveProjects(String userEmail) {
+        return userService.findByEmail(userEmail)
+                .flatMapMany(user -> projectRepository.findAllByUserId(user.getId().value()))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Project", "user", userEmail)));
     }
 }

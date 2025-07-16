@@ -3,11 +3,11 @@ package com.thushima.statusmonitor.project.infrastructure.web;
 import com.thushima.statusmonitor.project.application.ProjectService;
 import com.thushima.statusmonitor.project.presentation.dto.ProjectRequest;
 import com.thushima.statusmonitor.project.presentation.dto.ProjectResponse;
+import com.thushima.statusmonitor.user.application.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import com.thushima.statusmonitor.user.application.UserService;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -39,6 +39,11 @@ public class ProjectController {
 
     @GetMapping
     public Flux<ProjectResponse> getAll(@AuthenticationPrincipal String email) {
+        return projectService.getAllByUserEmail(email);
+    }
+
+    @GetMapping("/dashboard/summary")
+    public Flux<ProjectResponse> getSummary(@AuthenticationPrincipal String email) {
         return projectService.getAllByUserEmail(email);
     }
 
