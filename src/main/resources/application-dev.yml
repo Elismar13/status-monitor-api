@@ -1,36 +1,47 @@
 spring:
+  config:
+    activate:
+      on-profile: dev
+
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/status_monitor
-    username: thushima
-    password: postgres
+    url: ${SPRING_R2DBC_URL:r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:status_monitor}}
+    username: ${DB_USERNAME:thushima}
+    password: ${DB_PASSWORD:postgres}
+
   flyway:
-    url: jdbc:postgresql://localhost:5432/status_monitor
-    user: thushima
-    password: postgres
-    enabled: true
-    baseline-on-migrate: true
+    url: ${SPRING_FLYWAY_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:status_monitor}}
+    user: ${DB_USERNAME:thushima}
+    password: ${DB_PASSWORD:postgres}
+    baseline-on-migrate: ${FLYWAY_BASELINE_ON_MIGRATE:true}
+    enabled: ${FLYWAY_ENABLED:true}
+    locations: ${FLYWAY_LOCATIONS:classpath:db/migration}
 
 jwt:
-  secret: 2a3814287a20f7f4fde6bcb2964c496df8e82be6e2482f4bd25fd51cf392330c
+  secret: ${JWT_SECRET:2a3814287a20f7f4fde6bcb2964c496df8e82be6e2482f4bd25fd51cf392330c}
   access-token:
-    expiration: 86400000 # 24 hours in milliseconds
+    expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:86400000} # 24 hours in milliseconds
   refresh-token:
-    expiration: 2592000000 # 30 days in milliseconds
+    expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:2592000000} # 30 days in milliseconds
 
 app:
   cache:
     status:
-      ttl: 30  # Cache lifetime
-      max-size: 1000  # Maximum cache size
+      ttl: ${CACHE_TTL:30}  # Cache lifetime
+      max-size: ${CACHE_MAX_SIZE:1000}  # Maximum cache size
 
 logging:
   level:
-    root: INFO
-    com.thushima: DEBUG
-    org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.springframework.security: DEBUG
-    security: DEBUG
-    flyway: DEBUG
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    com.thushima: ${LOGGING_LEVEL_APP:DEBUG}
+    org.springframework.web: ${LOGGING_LEVEL_SPRING_WEB:DEBUG}
+    org.hibernate.SQL: ${LOGGING_LEVEL_HIBERNATE_SQL:DEBUG}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${LOGGING_LEVEL_HIBERNATE_TYPE:TRACE}
+    org.springframework.security: ${LOGGING_LEVEL_SPRING_SECURITY:DEBUG}
+    security: ${LOGGING_LEVEL_SECURITY:DEBUG}
+    flyway: ${LOGGING_LEVEL_FLYWAY:DEBUG}
 
+devtools:
+  livereload:
+    enabled: ${DEVELOPMENT_TOOLS_LIVERELOAD_ENABLED:true}
+  restart:
+    enabled: ${DEVELOPMENT_TOOLS_RESTART_ENABLED:true}

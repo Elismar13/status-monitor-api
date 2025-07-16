@@ -1,19 +1,42 @@
 spring:
+  config:
+    activate:
+      on-profile: prod
+  
+  # Database Configuration
+  r2dbc:
+    url: ${SPRING_R2DBC_URL:r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:status_monitor}}
+    username: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
+  
+  # Flyway Configuration
+  flyway:
+    url: ${SPRING_FLYWAY_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:status_monitor}}
+    user: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
+    enabled: ${FLYWAY_ENABLED:true}
+    baseline-on-migrate: ${FLYWAY_BASELINE_ON_MIGRATE:true}
+    locations: ${FLYWAY_LOCATIONS:classpath:db/migration}
+
   jpa:
     hibernate:
       ddl-auto: validate
+
   logging:
     level:
-      root: WARN
+      root: ${LOGGING_LEVEL_ROOT:INFO}
 
+# JWT Configuration
 jwt:
-  secret: 2a3814287a20f7f4fde6bcb2964c496df8e82be6e2482f4bd25fd51cf392330c
+  secret: ${JWT_SECRET:2a3814287a20f7f4fde6bcb2964c496df8e82be6e2482f4bd25fd51cf392330c}
   access-token:
-    expiration: 900000 # 15 minutes in milliseconds
+    expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:900000}  # 15 minutes
   refresh-token:
-    expiration: 2592000000 # 30 days in milliseconds
+    expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:2592000000}  # 30 days
 
+# Application-specific configuration
 app:
   cache:
-    status:
-      ttl: 0  # No cache in production
+    caffeine:
+      ttl: ${CACHE_TTL:0}  # No cache in production
+      max-size: ${CACHE_MAX_SIZE:10000}  # Increased cache size for production

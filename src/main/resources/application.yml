@@ -1,13 +1,12 @@
 spring:
   application:
-    name: statusmonitor
+    name: ${APPLICATION_NAME:statusmonitor}
   profiles:
-    active: dev
-
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   monitoring:
-    check-interval: 30000
-    connection-timeout: 5000
-    read-timeout: 30000
-    max-retries: 2
-    retry-delay: 1000
-    user-agent: StatusMonitor/1.0
+    check-interval: ${MONITORING_CHECK_INTERVAL:30000}
+    connection-timeout: ${MONITORING_CONNECTION_TIMEOUT:5000}
+    read-timeout: ${MONITORING_READ_TIMEOUT:30000}
+    max-retries: ${MONITORING_MAX_RETRIES:2}
+    retry-delay: ${MONITORING_RETRY_DELAY:1000}
+    user-agent: ${MONITORING_USER_AGENT:StatusMonitor/1.0}
