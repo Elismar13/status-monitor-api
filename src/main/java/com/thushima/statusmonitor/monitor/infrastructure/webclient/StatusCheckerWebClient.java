@@ -2,6 +2,7 @@ package com.thushima.statusmonitor.monitor.infrastructure.webclient;
 
 import com.thushima.statusmonitor.monitor.presentation.dto.MonitorResult;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -34,6 +35,7 @@ public class StatusCheckerWebClient {
                 .build();
     }
 
+    @Cacheable(value = "statusCache", key = "#url", unless = "#result == null || !#result.isUp()")
     public Mono<MonitorResult> checkStatus(String url, int timeoutInSeconds) {
         long startTime = System.currentTimeMillis();
 

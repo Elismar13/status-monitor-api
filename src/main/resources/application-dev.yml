@@ -17,6 +17,12 @@ jwt:
   refresh-token:
     expiration: 2592000000 # 30 days in milliseconds
 
+app:
+  cache:
+    status:
+      ttl: 30  # Cache lifetime
+      max-size: 1000  # Maximum cache size
+
 logging:
   level:
     root: INFO

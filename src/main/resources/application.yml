@@ -4,8 +4,6 @@ spring:
   profiles:
     active: dev
 
-# Configurações de monitoramento
-app:
   monitoring:
     check-interval: 30000  # 30 segundos
     connection-timeout: 5000  # 5 segundos
