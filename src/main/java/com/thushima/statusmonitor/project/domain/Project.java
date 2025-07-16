@@ -1,5 +1,6 @@
 package com.thushima.statusmonitor.project.domain;
 
+import com.thushima.statusmonitor.project.presentation.dto.ProjectRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,6 +47,25 @@ public class Project {
     private Double uptimePercentage;
     private Long totalUptimeInSeconds;
     private Long totalDowntimeInSeconds;
-    
+
+    public static Project buildNewProject(ProjectRequest request, Long userId) {
+        return Project.builder()
+                .name(request.name())
+                .description(request.description())
+                .url(request.url())
+                .active(request.active())
+                .userId(userId)
+                .checkIntervalInMinutes(request.checkIntervalInMinutes())
+                .timeoutInSeconds(request.timeoutInSeconds())
+                .successThreshold(request.successThreshold())
+                .failureThreshold(request.failureThreshold())
+                .uptimePercentage(100.0) // Start with 100% uptime
+                .totalUptimeInSeconds(0L)
+                .totalDowntimeInSeconds(0L)
+                .lastCheckedAt(null)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
 
 }

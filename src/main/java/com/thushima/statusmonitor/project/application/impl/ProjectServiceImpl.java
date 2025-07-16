@@ -29,24 +29,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Mono<ProjectResponse> create(ProjectRequest request, String userEmail) {
         return userService.findByEmail(userEmail)
                 .flatMap(user -> {
-                    Project project = Project.builder()
-                            .name(request.name())
-                            .description(request.description())
-                            .url(request.url())
-                            .active(request.active())
-                            .userId(user.getId().value())
-                            .checkIntervalInMinutes(request.checkIntervalInMinutes())
-                            .timeoutInSeconds(request.timeoutInSeconds())
-                            .successThreshold(request.successThreshold())
-                            .failureThreshold(request.failureThreshold())
-                            .uptimePercentage(100.0) // Start with 100% uptime
-                            .totalUptimeInSeconds(0L)
-                            .totalDowntimeInSeconds(0L)
-                            .lastCheckedAt(null)
-                            .createdAt(LocalDateTime.now())
-                            .updatedAt(LocalDateTime.now())
-                            .build();
-
+                    Project project = Project.buildNewProject(request, user.getId().value());
                     return projectRepository.save(project)
                             .map(ProjectResponse::fromDomain)
                             .doOnSuccess(p -> log.info("Created project: {} for user: {}", p.id(), userEmail))
@@ -72,12 +55,12 @@ public class ProjectServiceImpl implements ProjectService {
                 .collectList()
                 .map(projects -> {
                     long totalProjects = projects.size();
+                    long activeProjects = projects.stream()
+                            .filter(Project::isActive).count();
                     long upCount = projects.stream()
                             .filter(Project::isActive)
                             .filter(project -> "UP".equals(project.getLastStatus())).count();
-                    long downCount = projects.stream()
-                            .filter(Project::isActive)
-                            .filter(project -> "DOWN".equals(project.getLastStatus())).count();
+                    long downCount = activeProjects - upCount;
 
                     return DashboardSummaryResponse.builder()
                             .totalProjects(totalProjects)
