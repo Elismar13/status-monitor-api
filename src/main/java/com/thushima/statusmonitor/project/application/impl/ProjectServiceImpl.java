@@ -2,6 +2,7 @@ package com.thushima.statusmonitor.project.application.impl;
 
 import com.thushima.statusmonitor.project.application.ProjectService;
 import com.thushima.statusmonitor.project.domain.Project;
+import com.thushima.statusmonitor.project.domain.ProjectStatus;
 import com.thushima.statusmonitor.project.infrastructure.repository.ProjectRepository;
 import com.thushima.statusmonitor.project.presentation.dto.DashboardSummaryResponse;
 import com.thushima.statusmonitor.project.presentation.dto.ProjectRequest;
@@ -59,7 +60,8 @@ public class ProjectServiceImpl implements ProjectService {
                             .filter(Project::isActive).count();
                     long upCount = projects.stream()
                             .filter(Project::isActive)
-                            .filter(project -> "UP".equals(project.getLastStatus())).count();
+                            .filter(project -> project.getLastStatus() == ProjectStatus.UP.getCode())
+                            .count();
                     long downCount = activeProjects - upCount;
 
                     return DashboardSummaryResponse.builder()

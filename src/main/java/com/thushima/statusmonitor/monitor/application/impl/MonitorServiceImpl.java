@@ -4,6 +4,7 @@ import com.thushima.statusmonitor.monitor.application.MonitorService;
 import com.thushima.statusmonitor.monitor.infrastructure.webclient.StatusCheckerWebClient;
 import com.thushima.statusmonitor.monitor.presentation.dto.MonitorResult;
 import com.thushima.statusmonitor.project.domain.Project;
+import com.thushima.statusmonitor.project.domain.ProjectStatus;
 import com.thushima.statusmonitor.project.infrastructure.repository.ProjectRepository;
 import com.thushima.statusmonitor.project.presentation.dto.ProjectResponse;
 import lombok.RequiredArgsConstructor;
@@ -50,15 +51,12 @@ public class MonitorServiceImpl implements MonitorService {
         boolean isUp = result.isUp();
         LocalDateTime now = LocalDateTime.now();
 
-        // Atualiza as métricas de uptime/downtime
         long uptimeIncrement = isUp ? project.getCheckIntervalInMinutes() * 60 : 0;
         long downtimeIncrement = isUp ? 0 : project.getCheckIntervalInMinutes() * 60;
 
-        // Atualiza o projeto
-        project.setLastStatus(isUp ? "UP" : "DOWN");
+        project.setLastStatus(isUp ? ProjectStatus.UP.getCode() : ProjectStatus.DOWN.getCode());
         project.setLastCheckedAt(now);
 
-        // Atualiza métricas cumulativas
         project.setTotalUptimeInSeconds(
                 (project.getTotalUptimeInSeconds() != null ? project.getTotalUptimeInSeconds() : 0) + uptimeIncrement
         );
@@ -66,7 +64,6 @@ public class MonitorServiceImpl implements MonitorService {
                 (project.getTotalDowntimeInSeconds() != null ? project.getTotalDowntimeInSeconds() : 0) + downtimeIncrement
         );
 
-        // Calcula o uptime percentage
         long total = project.getTotalUptimeInSeconds() + project.getTotalDowntimeInSeconds();
         double uptimePercentage = total > 0 ?
                 (project.getTotalUptimeInSeconds() * 100.0) / total : 100.0;

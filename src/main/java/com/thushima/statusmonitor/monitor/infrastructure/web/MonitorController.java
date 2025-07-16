@@ -2,6 +2,7 @@ package com.thushima.statusmonitor.monitor.infrastructure.web;
 
 import com.thushima.statusmonitor.monitor.application.MonitorService;
 import com.thushima.statusmonitor.monitor.presentation.dto.MonitorResult;
+import com.thushima.statusmonitor.project.domain.ProjectStatus;
 import com.thushima.statusmonitor.project.presentation.dto.ProjectResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class MonitorController {
 
         return monitorService.getProjectStatus(projectId)
                 .map(project -> ResponseEntity.ok(MonitorResult.builder()
-                        .status(project.lastStatus())
+                        .status(project.lastStatus() != null ? project.lastStatus().name() : ProjectStatus.UNKNOWN.name())
                         .checkedAt(Instant.now())
                         .statusCode(200)
                         .build()

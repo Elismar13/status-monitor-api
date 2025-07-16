@@ -2,9 +2,9 @@ package com.thushima.statusmonitor.project.presentation.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.thushima.statusmonitor.project.domain.Project;
+import com.thushima.statusmonitor.project.domain.ProjectStatus;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ProjectResponse(
@@ -17,7 +17,7 @@ public record ProjectResponse(
     Integer timeoutInSeconds,
     Integer successThreshold,
     Integer failureThreshold,
-    String lastStatus,
+    ProjectStatus lastStatus,
     LocalDateTime lastCheckedAt,
     Double uptimePercentage,
     Long totalUptimeInSeconds,
@@ -36,7 +36,7 @@ public record ProjectResponse(
             project.getTimeoutInSeconds(),
             project.getSuccessThreshold(),
             project.getFailureThreshold(),
-            project.getLastStatus(),
+                ProjectStatus.fromCode(project.getLastStatus()),
             project.getLastCheckedAt(),
             project.getUptimePercentage(),
             project.getTotalUptimeInSeconds(),

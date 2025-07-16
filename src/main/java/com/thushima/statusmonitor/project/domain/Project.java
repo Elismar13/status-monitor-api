@@ -42,7 +42,7 @@ public class Project {
     private Integer failureThreshold;
     
     // Status fields (cached)
-    private String lastStatus;
+    private Short lastStatus = ProjectStatus.UNKNOWN.getCode();
     private LocalDateTime lastCheckedAt;
     private Double uptimePercentage;
     private Long totalUptimeInSeconds;
@@ -62,6 +62,7 @@ public class Project {
                 .uptimePercentage(100.0) // Start with 100% uptime
                 .totalUptimeInSeconds(0L)
                 .totalDowntimeInSeconds(0L)
+                .lastStatus(ProjectStatus.UP.getCode()) // Default to UP when creating a new project
                 .lastCheckedAt(null)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
