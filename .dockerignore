@@ -1,0 +1,35 @@
+# Maven
+target/
+!target/*.jar
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Build files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Logs and temp files
+logs/
+*.log
+*.bak
+*.swp
+*~
+
+# Environment files
+.env
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
