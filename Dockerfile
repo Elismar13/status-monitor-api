@@ -1,28 +1,29 @@
-# Build stage
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+# Stage 1: Build the application
+FROM eclipse-temurin:21-jdk AS builder
+
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy only the POM file first to leverage Docker cache
-COPY pom.xml .
+# Copy project files into the container
+COPY . .
 
-# Download all dependencies
-RUN mvn dependency:go-offline -B
+# Build the application using Maven (skip tests for faster build)
+RUN ./mvnw clean package -DskipTests
 
-# Copy source code
-COPY src ./src
+# Stage 2: Create a lightweight runtime image
+FROM eclipse-temurin:21-jre
 
-# Build the application
-RUN mvn package -DskipTests
-
-# Run stage
-FROM eclipse-temurin:21-jre-jammy
+# Set working directory
 WORKDIR /app
 
-# Copy the JAR file from the build stage
-COPY --from=build /app/target/*.jar app.jar
+# Copy the generated JAR file from the build stage
+COPY --from=builder /app/target/*.jar app.jar
 
-# Expose the port the app runs on
+# Expose the application's default port
 EXPOSE 8080
+
+# Default environment profile (can be overridden at runtime)
+ENV SPRING_PROFILES_ACTIVE=prod
 
 # Command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
