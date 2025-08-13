@@ -30,6 +30,7 @@
         <java.version>21</java.version>
         <flyway.version>11.9.0</flyway.version>
         <jwt.version>0.11.5</jwt.version>
+        <caffeine.version>3.2.0</caffeine.version>
     </properties>
     <dependencies>
         <dependency>
@@ -79,6 +80,10 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
 
         <!-- DATABASE -->
         <dependency>
@@ -124,7 +129,7 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>3.2.0</version>
+            <version>${caffeine.version}</version>
         </dependency>
 
     </dependencies>

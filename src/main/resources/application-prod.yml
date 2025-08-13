@@ -2,14 +2,14 @@ spring:
   config:
     activate:
       on-profile: prod
+  main:
+    lazy-initialization: ${USE_LAZY_INITIALIZATION:true}
   
-  # Database Configuration
   r2dbc:
     url: ${SPRING_R2DBC_URL:r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:status_monitor}}
     username: ${DB_USERNAME:}
     password: ${DB_PASSWORD:}
   
-  # Flyway Configuration
   flyway:
     url: ${SPRING_FLYWAY_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:status_monitor}}
     user: ${DB_USERNAME:}
@@ -26,7 +26,6 @@ spring:
     level:
       root: ${LOGGING_LEVEL_ROOT:INFO}
 
-# JWT Configuration
 jwt:
   secret: ${JWT_SECRET:2a3814287a20f7f4fde6bcb2964c496df8e82be6e2482f4bd25fd51cf392330c}
   access-token:
@@ -34,9 +33,30 @@ jwt:
   refresh-token:
     expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:2592000000}  # 30 days
 
-# Application-specific configuration
+server:
+  compression:
+    enabled: ${USE_TYPE_COMPRESSION:true}
+    compression-mime-types: ${COMPRESSION_MIME_TYPES:application/json}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_EXPOSURE_INCLUDE:health,info}
+
 app:
   cache:
-    caffeine:
-      ttl: ${CACHE_TTL:0}  # No cache in production
-      max-size: ${CACHE_MAX_SIZE:10000}  # Increased cache size for production
+    status:
+      ttl: ${CACHE_TTL:30}
+      max-size: ${CACHE_MAX_SIZE:10000}
+
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT:WARN}
+    com.thushima: ${LOGGING_LEVEL_APP:WARN}
+    org.springframework.web: ${LOGGING_LEVEL_SPRING_WEB:WARN}
+    org.hibernate.SQL: ${LOGGING_LEVEL_HIBERNATE_SQL:WARN}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${LOGGING_LEVEL_HIBERNATE_TYPE:WARN}
+    org.springframework.security: ${LOGGING_LEVEL_SPRING_SECURITY:WARN}
+    security: ${LOGGING_LEVEL_SECURITY:WARN}
+    flyway: ${LOGGING_LEVEL_FLYWAY:WARN}

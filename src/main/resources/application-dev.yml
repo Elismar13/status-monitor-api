@@ -2,6 +2,8 @@ spring:
   config:
     activate:
       on-profile: dev
+  main:
+    lazy-initialization: ${USE_LAZY_INITIALIZATION:false}
 
   r2dbc:
     url: ${SPRING_R2DBC_URL:r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:status_monitor}}
@@ -15,6 +17,10 @@ spring:
     baseline-on-migrate: ${FLYWAY_BASELINE_ON_MIGRATE:true}
     enabled: ${FLYWAY_ENABLED:true}
     locations: ${FLYWAY_LOCATIONS:classpath:db/migration}
+    
+  jpa:
+    hibernate:
+      ddl-auto: validate
 
 jwt:
   secret: ${JWT_SECRET:2a3814287a20f7f4fde6bcb2964c496df8e82be6e2482f4bd25fd51cf392330c}
@@ -22,6 +28,17 @@ jwt:
     expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:86400000} # 24 hours in milliseconds
   refresh-token:
     expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:2592000000} # 30 days in milliseconds
+
+server:
+  compression:
+    enabled: ${USE_TYPE_COMPRESSION:false}
+    compression-mime-types: ${COMPRESSION_MIME_TYPES:application/json}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_EXPOSURE_INCLUDE:*}
 
 app:
   cache:
