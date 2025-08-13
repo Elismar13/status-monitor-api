@@ -26,4 +26,4 @@ EXPOSE 8080
 ENV SPRING_PROFILES_ACTIVE=prod
 
 # Command to run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "XX:+UseG1GC -Xms256m -Xmx512m", "-jar", "app.jar"]
